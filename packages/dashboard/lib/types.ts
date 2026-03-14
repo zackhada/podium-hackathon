@@ -53,6 +53,7 @@ export interface AIAction {
   status: AIActionStatus;
   cost?: number;
   details?: string;
+  reasoning?: string;
 }
 
 export interface MonthlyRevenue {
@@ -142,6 +143,8 @@ export interface ComparableListing {
   distanceMiles: number;
   rating: number;
   reviewCount: number;
+  imageKeyword?: string;
+  image?: string;
 }
 
 export interface NearbyAttraction {
@@ -176,5 +179,4 @@ export interface PropertySetupResult {
   comparables: ComparableListing[];
   attractions: NearbyAttraction[];
   cleaningServices: CleaningService[];
-  quickbooks: QuickbooksConnection;
 }

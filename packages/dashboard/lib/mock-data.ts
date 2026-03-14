@@ -8,7 +8,6 @@ import {
   PricingRecommendation,
   PayoutSummary,
   GuestConversation,
-  PropertySetupResult,
 } from "./types";
 
 // ============================================================
@@ -90,7 +89,7 @@ export const bookings: Booking[] = [
     propertyId: "prop-1",
     guestName: "Sarah Chen",
     guestEmail: "sarah.chen@email.com",
-    guestPhone: "+1 (808) 555-0142",
+    guestPhone: "+18085550142",
     guestAvatar: "https://i.pravatar.cc/64?img=47",
     checkIn: "2026-03-10",
     checkOut: "2026-03-15",
@@ -118,7 +117,7 @@ export const bookings: Booking[] = [
     propertyId: "prop-2",
     guestName: "Emily Watson",
     guestEmail: "emily.w@email.com",
-    guestPhone: "+1 (415) 555-0289",
+    guestPhone: "+14155550289",
     guestAvatar: "https://i.pravatar.cc/64?img=5",
     checkIn: "2026-03-08",
     checkOut: "2026-03-14",
@@ -172,7 +171,7 @@ export const bookings: Booking[] = [
     propertyId: "prop-4",
     guestName: "Amanda Liu",
     guestEmail: "a.liu@email.com",
-    guestPhone: "+1 (213) 555-0374",
+    guestPhone: "+12135550374",
     guestAvatar: "https://i.pravatar.cc/64?img=9",
     checkIn: "2026-03-12",
     checkOut: "2026-03-16",
@@ -213,7 +212,7 @@ export const bookings: Booking[] = [
     propertyId: "prop-5",
     guestName: "Chris Martinez",
     guestEmail: "c.martinez@email.com",
-    guestPhone: "+1 (310) 555-0517",
+    guestPhone: "+19496858843",
     guestAvatar: "https://i.pravatar.cc/64?img=12",
     checkIn: "2026-03-14",
     checkOut: "2026-03-18",
@@ -287,6 +286,23 @@ export const bookings: Booking[] = [
     source: "vrbo",
     status: "confirmed",
     guests: 3,
+  },
+  // Demo guest: Jim Christian (judge) — called by OpenClaw agent during live demo
+  {
+    id: "bk-jim",
+    propertyId: "prop-1",
+    guestName: "Jim Christian",
+    guestEmail: "jim.christian@email.com",
+    guestPhone: "+15178965837",
+    guestAvatar: "/jim-christian.png",
+    checkIn: "2026-03-12",
+    checkOut: "2026-03-18",
+    nightlyRate: 320,
+    totalAmount: 1920,
+    source: "direct",
+    status: "checked-in",
+    guests: 1,
+    notes: "VIP demo guest — OpenClaw will call this guest live during the hackathon demo",
   },
   {
     id: "bk-16",
@@ -501,10 +517,12 @@ export const aiActions: AIAction[] = [
     category: "cleaning",
     title: "Scheduled turnover cleaning",
     description:
-      "Booked Sparkle Clean Co. for March 15 checkout. Deep clean + linen change.",
+      "Booked Waikiki Housekeeping for March 15 turnover. Deep clean + full linen change. (808) 763-9877",
     timestamp: "2026-03-14T09:30:00Z",
     status: "completed",
     cost: 185,
+    reasoning:
+      "Sarah Chen checks out Mar 15 at 11am → next guest arrives Mar 16 at 3pm → 4h window available → Waikiki Housekeeping has 2.5h turnover slot at 11:30am → $185 within $200 budget threshold → confirmed",
   },
   {
     id: "act-2",
@@ -512,10 +530,12 @@ export const aiActions: AIAction[] = [
     category: "amazon",
     title: "Restocked kitchen supplies",
     description:
-      "Ordered dish soap, sponges, paper towels, and trash bags via Amazon. Delivery by March 13.",
+      "Ordered dish soap, sponges, paper towels, and trash bags via Instacart from Foodland Farms (Ward Ave). Delivery by March 13.",
     timestamp: "2026-03-13T22:15:00Z",
     status: "completed",
     cost: 47,
+    reasoning:
+      "Supply check: dish soap at 12% remaining, paper towels 1 roll left, sponges past 30-day cycle → Okafor booking through Mar 22 (9 more nights) → insufficient stock → Instacart from Foodland Farms: $47, 2h delivery window → order placed",
   },
   {
     id: "act-3",
@@ -526,6 +546,8 @@ export const aiActions: AIAction[] = [
       "Increased nightly rate from $175 to $195 for March 20-22 weekend based on demand surge.",
     timestamp: "2026-03-13T18:00:00Z",
     status: "completed",
+    reasoning:
+      "Competitor scan: 4 comparable Waikiki studios raised weekend rates 15–22% → area occupancy Mar 20–22 at 94% → current $175/nt underpriced by ~$20 vs market → raised to $195 (+11%) → within 5% of comp average",
   },
   {
     id: "act-4",
@@ -536,6 +558,8 @@ export const aiActions: AIAction[] = [
       "Auto-sent check-in guide with door code, WiFi, and parking info to Emily Watson.",
     timestamp: "2026-03-13T14:00:00Z",
     status: "completed",
+    reasoning:
+      "Emily Watson booking confirmed for Mar 18 → 72-hour pre-arrival trigger fired → door code rotated to 4892 → WiFi confirmed active → parking permit #DH-2026-03 issued → guide sent via Airbnb thread + SMS",
   },
   {
     id: "act-5",
@@ -543,10 +567,12 @@ export const aiActions: AIAction[] = [
     category: "repair",
     title: "Submitted maintenance request",
     description:
-      "Guest reported AC making noise. Contacted Island HVAC for inspection on March 15.",
+      "Guest reported AC making noise. Contacted Standard Air Hawaii for inspection on March 15. (808) 302-0644",
     timestamp: "2026-03-13T11:30:00Z",
     status: "in-progress",
     cost: 150,
+    reasoning:
+      "Guest reported grinding from AC at 10:45pm → Daikin 3-ton at Manoa had fan bracket flag in Oct 2025 inspection → loose bracket is known failure mode for this model → Standard Air Hawaii earliest slot: Mar 15 8am → dispatched at $150 estimate (within single-repair auth limit)",
   },
   {
     id: "act-6",
@@ -557,17 +583,21 @@ export const aiActions: AIAction[] = [
       "Updated availability on Airbnb and VRBO. Blocked March 15 for cleaning buffer.",
     timestamp: "2026-03-13T08:00:00Z",
     status: "completed",
+    reasoning:
+      "Sarah Chen checkout Mar 15 → 2.5h cleaning buffer required → Airbnb incorrectly showed Mar 15 as available → VRBO was already blocked → corrected Airbnb calendar → both platforms now show Mar 15 blocked, open from Mar 16",
   },
   {
     id: "act-7",
     propertyId: "prop-3",
     category: "cleaning",
-    title: "Mid-stay towel refresh",
+    title: "Mid-stay linen refresh",
     description:
-      "Arranged fresh towel delivery for Kailua Beach House. Guest requested extra bath towels.",
+      "Scheduled Bolt Laundry pickup/drop-off for Kailua Beach House. Guest requested extra bath towels. Next-day turnaround at $1.99/lb.",
     timestamp: "2026-03-12T16:45:00Z",
     status: "completed",
     cost: 45,
+    reasoning:
+      "James Okafor messaged at 4:15pm: 'Could we get extra bath towels?' → day 5 of 9-night stay, past mid-stay threshold → Bolt Laundry has next-day turnaround at $1.99/lb → $45 total for refresh + delivery → arranged, confirmed delivered 5:20pm",
   },
   {
     id: "act-8",
@@ -575,10 +605,12 @@ export const aiActions: AIAction[] = [
     category: "amazon",
     title: "Ordered replacement pillows",
     description:
-      "2x king-size hypoallergenic pillows ordered. Previous set showing wear after 6 months.",
+      "2x king-size hypoallergenic pillows ordered from Costco Iwilei (Nimitz Hwy). Previous set showing wear after 6 months.",
     timestamp: "2026-03-12T10:20:00Z",
     status: "completed",
     cost: 89,
+    reasoning:
+      "Inventory audit: Diamond Head king pillows last replaced Sep 2025 → 6-month replacement cycle exceeded → allergy flag from prior guest requires hypoallergenic spec → Costco Iwilei 2-pack $89, same-day pickup available → ordered, confirmed before next guest",
   },
   {
     id: "act-9",
@@ -589,6 +621,8 @@ export const aiActions: AIAction[] = [
       'Auto-replied to Amanda Liu asking about late checkout. Offered 1pm checkout for $25 fee.',
     timestamp: "2026-03-12T08:15:00Z",
     status: "completed",
+    reasoning:
+      "Amanda Liu messaged: 'Any chance of a late checkout?' → next booking arrives 4pm Mar 13 → 3h window after 11am checkout → cleaning needs 2.5h → 1pm checkout feasible with 30min buffer → $25 late checkout policy applied → offered and confirmed",
   },
   {
     id: "act-10",
@@ -599,6 +633,8 @@ export const aiActions: AIAction[] = [
       "Reduced Tuesday-Thursday rate by 12% to fill gap. Competitor analysis showed lower demand.",
     timestamp: "2026-03-11T20:00:00Z",
     status: "completed",
+    reasoning:
+      "Demand analysis: Manoa Tue–Thu occupancy at 61% vs 89% weekend → competitor listings lowered midweek -10% last week → 2 midweek gaps open in next 3 weeks → reduced to $198 (-12%) → same playbook filled Feb midweek gap within 48h",
   },
   {
     id: "act-11",
@@ -609,6 +645,8 @@ export const aiActions: AIAction[] = [
       "Reminded Sarah Chen about March 15 checkout. Included trash/linens instructions.",
     timestamp: "2026-03-11T17:00:00Z",
     status: "completed",
+    reasoning:
+      "Sarah Chen checkout Mar 15 → 48-hour reminder trigger → included: checkout 11am, key in lockbox, dishwasher on, linens in hamper, thermostat to 76°F → sent via Airbnb thread + SMS → read receipt confirmed 17:04",
   },
   {
     id: "act-12",
@@ -616,10 +654,12 @@ export const aiActions: AIAction[] = [
     category: "repair",
     title: "Fixed leaking faucet",
     description:
-      "Plumber completed kitchen faucet repair at Kailua Beach House. Washer replacement.",
+      "Steve's Plumbing & A/C Service completed kitchen faucet repair at Kailua Beach House. Washer replacement, same-day service.",
     timestamp: "2026-03-10T14:30:00Z",
     status: "completed",
     cost: 120,
+    reasoning:
+      "Guest Daniel Reeves reported faucet drip Mar 8 → Steve's Plumbing dispatched Mar 10 → technician found worn washer in kitchen faucet → replaced, tested leak-free → $120 billed (within $150 single-repair auth) → guest notified, resolved",
   },
   {
     id: "act-13",
@@ -627,9 +667,11 @@ export const aiActions: AIAction[] = [
     category: "calendar",
     title: "Blocked dates for maintenance",
     description:
-      "Reserved March 25-26 for deep cleaning and AC filter replacement at Diamond Head Suite.",
+      "Reserved March 25-26 for deep cleaning (VacayClean) and AC filter replacement (Standard Air Hawaii) at Diamond Head Suite.",
     timestamp: "2026-03-10T09:00:00Z",
     status: "pending",
+    reasoning:
+      "AC filter at Diamond Head last replaced Nov 2025 → manufacturer spec: 90-day cycle → due mid-March → next booking gap in calendar: Mar 25–26 → scheduling deep clean + filter replacement → blocking Airbnb and VRBO for 2-day window — awaiting your approval",
   },
   {
     id: "act-14",
@@ -637,10 +679,12 @@ export const aiActions: AIAction[] = [
     category: "cleaning",
     title: "Emergency spot clean",
     description:
-      "Guest reported coffee spill on carpet. Arranged same-day spot cleaning service.",
+      "Guest reported coffee spill on carpet. Arranged same-day spot clean with VacayClean (powered by Maid in Oahu). No charge to guest.",
     timestamp: "2026-03-09T19:00:00Z",
     status: "completed",
     cost: 75,
+    reasoning:
+      "Amanda Liu reported coffee spill on carpet at 7pm → stain treatment effective within 2h → VacayClean available 8pm same-day → dispatched at $75 emergency rate → confirmed clean 9:30pm, no permanent staining → no charge passed to guest (goodwill)",
   },
   {
     id: "act-15",
@@ -648,10 +692,12 @@ export const aiActions: AIAction[] = [
     category: "amazon",
     title: "Restocked bathroom amenities",
     description:
-      "Ordered shampoo, conditioner, body wash, and hand soap refills for Manoa Townhouse.",
+      "Ordered shampoo, conditioner, body wash, and hand soap refills via Instacart from Longs Drugs (Kahala). Delivery confirmed for Manoa Townhouse.",
     timestamp: "2026-03-08T11:00:00Z",
     status: "completed",
     cost: 62,
+    reasoning:
+      "Monthly amenity audit: Manoa shampoo/conditioner below 20% threshold → body wash and hand soap 1 unit remaining → booking Mar 9 requires full resupply → Instacart from Longs Drugs Kahala: $62 total, 2h delivery → confirmed delivered before check-in",
   },
 ];
 
@@ -699,25 +745,25 @@ export const deposits: Deposit[] = [
 // Current behavior: Returns hard-coded charge list
 // ============================================================
 export const extraCharges: ExtraCharge[] = [
-  { id: "chg-1", date: "2026-03-14", propertyId: "prop-1", category: "Cleaning", description: "Turnover deep clean - Sparkle Clean Co.", amount: 185, aiInitiated: true },
-  { id: "chg-2", date: "2026-03-13", propertyId: "prop-3", category: "Supplies", description: "Kitchen supplies restock via Amazon", amount: 47, aiInitiated: true },
-  { id: "chg-3", date: "2026-03-13", propertyId: "prop-5", category: "Repair", description: "AC inspection - Island HVAC", amount: 150, aiInitiated: true },
-  { id: "chg-4", date: "2026-03-12", propertyId: "prop-3", category: "Cleaning", description: "Mid-stay towel refresh service", amount: 45, aiInitiated: true },
-  { id: "chg-5", date: "2026-03-12", propertyId: "prop-2", category: "Supplies", description: "Replacement pillows (2x king)", amount: 89, aiInitiated: true },
-  { id: "chg-6", date: "2026-03-10", propertyId: "prop-3", category: "Repair", description: "Kitchen faucet repair - plumber", amount: 120, aiInitiated: false },
-  { id: "chg-7", date: "2026-03-09", propertyId: "prop-4", category: "Cleaning", description: "Emergency carpet spot clean", amount: 75, aiInitiated: true },
-  { id: "chg-8", date: "2026-03-08", propertyId: "prop-5", category: "Supplies", description: "Bathroom amenity restock", amount: 62, aiInitiated: true },
+  { id: "chg-1", date: "2026-03-14", propertyId: "prop-1", category: "Cleaning", description: "Turnover deep clean - Waikiki Housekeeping", amount: 185, aiInitiated: true },
+  { id: "chg-2", date: "2026-03-13", propertyId: "prop-3", category: "Supplies", description: "Kitchen supplies restock via Instacart (Foodland Farms)", amount: 47, aiInitiated: true },
+  { id: "chg-3", date: "2026-03-13", propertyId: "prop-5", category: "Repair", description: "AC inspection - Standard Air Hawaii", amount: 150, aiInitiated: true },
+  { id: "chg-4", date: "2026-03-12", propertyId: "prop-3", category: "Cleaning", description: "Mid-stay linen refresh - Bolt Laundry", amount: 45, aiInitiated: true },
+  { id: "chg-5", date: "2026-03-12", propertyId: "prop-2", category: "Supplies", description: "Replacement pillows (2x king) - Costco Iwilei", amount: 89, aiInitiated: true },
+  { id: "chg-6", date: "2026-03-10", propertyId: "prop-3", category: "Repair", description: "Kitchen faucet repair - Steve's Plumbing & A/C Service", amount: 120, aiInitiated: false },
+  { id: "chg-7", date: "2026-03-09", propertyId: "prop-4", category: "Cleaning", description: "Emergency carpet spot clean - VacayClean", amount: 75, aiInitiated: true },
+  { id: "chg-8", date: "2026-03-08", propertyId: "prop-5", category: "Supplies", description: "Bathroom amenity restock via Instacart (Longs Drugs)", amount: 62, aiInitiated: true },
   // February charges
-  { id: "chg-9",  date: "2026-02-03", propertyId: "prop-1", category: "Cleaning",  description: "Turnover clean after early Feb checkout",    amount: 150, aiInitiated: true  },
-  { id: "chg-10", date: "2026-02-07", propertyId: "prop-2", category: "Supplies",  description: "Restocked toiletries and coffee supplies",     amount: 80,  aiInitiated: true  },
-  { id: "chg-11", date: "2026-02-10", propertyId: "prop-3", category: "Repair",    description: "Replaced broken patio screen door",           amount: 220, aiInitiated: false },
-  { id: "chg-12", date: "2026-02-14", propertyId: "prop-4", category: "Cleaning",  description: "Valentine's Day turnover deep clean",          amount: 75,  aiInitiated: true  },
-  { id: "chg-13", date: "2026-02-18", propertyId: "prop-5", category: "Supplies",  description: "Restocked kitchen consumables via Amazon",     amount: 58,  aiInitiated: true  },
-  { id: "chg-14", date: "2026-02-22", propertyId: "prop-1", category: "Repair",    description: "Fixed loose towel rail in master bath",        amount: 95,  aiInitiated: false },
-  { id: "chg-15", date: "2026-02-25", propertyId: "prop-2", category: "Cleaning",  description: "Pre-checkout professional clean",              amount: 165, aiInitiated: true  },
-  { id: "chg-16", date: "2026-02-26", propertyId: "prop-3", category: "Supplies",  description: "Ordered new beach towels and pool floats",     amount: 140, aiInitiated: true  },
-  { id: "chg-17", date: "2026-03-04", propertyId: "prop-4", category: "Repair",    description: "Dishwasher drainage unclogged",                amount: 110, aiInitiated: false },
-  { id: "chg-18", date: "2026-03-06", propertyId: "prop-1", category: "Supplies",  description: "Restocked welcome basket items",               amount: 45,  aiInitiated: true  },
+  { id: "chg-9",  date: "2026-02-03", propertyId: "prop-1", category: "Cleaning",  description: "Turnover clean - Waikiki Housekeeping",                  amount: 150, aiInitiated: true  },
+  { id: "chg-10", date: "2026-02-07", propertyId: "prop-2", category: "Supplies",  description: "Restocked toiletries and coffee supplies via Instacart",  amount: 80,  aiInitiated: true  },
+  { id: "chg-11", date: "2026-02-10", propertyId: "prop-3", category: "Repair",    description: "Replaced broken patio screen door - Kama'aina Handyman",  amount: 220, aiInitiated: false },
+  { id: "chg-12", date: "2026-02-14", propertyId: "prop-4", category: "Cleaning",  description: "Valentine's Day turnover deep clean - VacayClean",        amount: 75,  aiInitiated: true  },
+  { id: "chg-13", date: "2026-02-18", propertyId: "prop-5", category: "Supplies",  description: "Restocked kitchen consumables via Instacart (Don Quijote)",amount: 58,  aiInitiated: true  },
+  { id: "chg-14", date: "2026-02-22", propertyId: "prop-1", category: "Repair",    description: "Fixed loose towel rail in master bath - Handy Andy Hawaii",amount: 95,  aiInitiated: false },
+  { id: "chg-15", date: "2026-02-25", propertyId: "prop-2", category: "Cleaning",  description: "Pre-checkout professional clean - Waikiki Housekeeping",   amount: 165, aiInitiated: true  },
+  { id: "chg-16", date: "2026-02-26", propertyId: "prop-3", category: "Supplies",  description: "New beach towels and pool floats - Costco Iwilei",         amount: 140, aiInitiated: true  },
+  { id: "chg-17", date: "2026-03-04", propertyId: "prop-4", category: "Repair",    description: "Dishwasher drainage unclogged - Oahu Appliance Repair Service", amount: 110, aiInitiated: false },
+  { id: "chg-18", date: "2026-03-06", propertyId: "prop-1", category: "Supplies",  description: "Restocked welcome basket items via Instacart (Foodland)",  amount: 45,  aiInitiated: true  },
 ];
 
 // ============================================================
@@ -803,7 +849,7 @@ export const guestConversations: GuestConversation[] = [
     messages: [
       { id: "m2-1", role: "agent", content: "Hi Emily! Your check-in at Diamond Head Ocean Suite is confirmed for March 8th at 3pm. Door code: 4891. WiFi: DiamondHead_Guest / PW: OceanView!23", timestamp: "2026-03-07T09:00:00Z" },
       { id: "m2-2", role: "guest", content: "Thanks! We arrived safely. Beautiful place! One issue though—the AC is making a rattling noise.", timestamp: "2026-03-08T18:30:00Z" },
-      { id: "m2-3", role: "agent", content: "I'm sorry about that! I've already submitted a maintenance request to Island HVAC. A technician will come by tomorrow between 10am–12pm to inspect. Does that work for you?", timestamp: "2026-03-08T18:31:00Z" },
+      { id: "m2-3", role: "agent", content: "I'm sorry about that! I've already submitted a maintenance request to Standard Air Hawaii. A technician will come by tomorrow between 10am–12pm to inspect. Does that work for you?", timestamp: "2026-03-08T18:31:00Z" },
       { id: "m2-4", role: "guest", content: "That works perfectly, thank you for the quick response!", timestamp: "2026-03-08T18:45:00Z" },
       { id: "m2-5", role: "agent", content: "The technician confirmed the repair is complete—just a loose fan bracket. Everything should be quiet now!", timestamp: "2026-03-09T12:30:00Z" },
       { id: "m2-6", role: "guest", content: "Yes, much quieter! Loving the ocean view from the lanai every morning ☀️", timestamp: "2026-03-09T19:00:00Z" },
@@ -885,17 +931,27 @@ export const guestConversations: GuestConversation[] = [
       { id: "m6-9", role: "guest", content: "This has been the best vacation we've ever taken. We'll absolutely be back!", timestamp: "2026-03-10T14:00:00Z" },
     ],
   },
+  // Demo conversation: Jim Christian — will receive a live OpenClaw call during demo
+  {
+    id: "conv-jim",
+    bookingId: "bk-jim",
+    guestName: "Jim Christian",
+    guestAvatar: "/jim-christian.png",
+    propertyId: "prop-1",
+    lastMessageTime: "2026-03-12T15:00:00Z",
+    unreadCount: 0,
+    messages: [
+      { id: "mj-1", role: "agent", content: "Hi Jim! Your stay at Waikiki Beachfront Condo is confirmed for March 12–18. Lockbox code: 3847. WiFi: WaikikiBeachfront | Password: Paradise2026#. Let me know if you need anything!", timestamp: "2026-03-12T15:00:00Z" },
+    ],
+  },
 ];
 
 export function getPropertyById(id: string): Property | undefined {
   return properties.find((p) => p.id === id);
 }
 
-export function generatePropertySetup(
-  address: string,
-  lat: number,
-  lng: number
-): PropertySetupResult {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function generatePropertySetup(address: string, lat: number, lng: number): any {
   return {
     address,
     displayName: address.split(",")[0],
@@ -953,38 +1009,32 @@ export function generatePropertySetup(
     cleaningServices: [
       {
         id: "clean-1",
-        name: "Aloha Clean",
-        pricePerTurnover: 145,
-        rating: 4.5,
-        reviewCount: 78,
+        name: "VacayClean (Maid in Oahu)",
+        pricePerTurnover: 155,
+        rating: 4.7,
+        reviewCount: 134,
         turnaroundHours: 3,
         badge: "Budget",
       },
       {
         id: "clean-2",
-        name: "Island Sparkle",
-        pricePerTurnover: 175,
+        name: "Waikiki Housekeeping",
+        pricePerTurnover: 185,
         rating: 4.8,
-        reviewCount: 156,
+        reviewCount: 203,
         turnaroundHours: 2,
         badge: "Recommended",
       },
       {
         id: "clean-3",
-        name: "Elite Turnover",
-        pricePerTurnover: 220,
+        name: "The Home Up Clean",
+        pricePerTurnover: 225,
         rating: 4.9,
-        reviewCount: 94,
+        reviewCount: 67,
         turnaroundHours: 1.5,
         badge: "Premium",
       },
     ],
-    quickbooks: {
-      status: "connected",
-      companyName: "New Property LLC",
-      accountsLinked: 3,
-      lastSync: "just now",
-    },
   };
 }
 

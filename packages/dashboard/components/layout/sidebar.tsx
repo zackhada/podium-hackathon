@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, LayoutDashboard, CalendarDays, Activity, DollarSign, MessageSquare, Map } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Activity, DollarSign, Map, PlusCircle } from "lucide-react";
+import { PropBotIcon } from "@/components/ui/prop-bot-icon";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -11,7 +12,7 @@ const navLinks = [
   { href: "/calendar", label: "Bookings", icon: CalendarDays },
   { href: "/operations", label: "Operations", icon: Activity },
   { href: "/finances", label: "Finances", icon: DollarSign },
-  { href: "/chat", label: "Chat", icon: MessageSquare },
+  { href: "/add-property", label: "Add Property", icon: PlusCircle },
 ];
 
 export function Sidebar() {
@@ -22,7 +23,7 @@ export function Sidebar() {
       {/* Branding */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-border">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent">
-          <Bot className="h-5 w-5 text-white" />
+          <PropBotIcon className="h-5 w-5 text-white" />
         </div>
         <div>
           <h1 className="text-base font-semibold text-gray-900">PropBot</h1>
@@ -35,19 +36,23 @@ export function Sidebar() {
         {navLinks.map((link) => {
           const isActive = pathname === link.href;
           return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-accent/10 text-accent"
-                  : "text-muted hover:bg-gray-50 hover:text-gray-900"
+            <div key={link.href}>
+              {link.href === "/add-property" && (
+                <hr className="border-border mx-3 my-2" />
               )}
-            >
-              <link.icon className={cn("h-4.5 w-4.5", isActive ? "text-accent" : "text-muted-light")} />
-              {link.label}
-            </Link>
+              <Link
+                href={link.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-accent/10 text-accent"
+                    : "text-muted hover:bg-gray-50 hover:text-gray-900"
+                )}
+              >
+                <link.icon className={cn("h-4.5 w-4.5", isActive ? "text-accent" : "text-muted-light")} />
+                {link.label}
+              </Link>
+            </div>
           );
         })}
       </nav>

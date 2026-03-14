@@ -4,8 +4,9 @@ import { useState } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { MonthGrid } from "@/components/calendar/month-grid";
 import { PropertyFilter } from "@/components/calendar/property-filter";
+import { GuestChats } from "@/components/calendar/guest-chats";
 import { Button } from "@/components/ui/button";
-import { bookings, properties } from "@/lib/mock-data";
+import { bookings, properties, guestConversations } from "@/lib/mock-data";
 import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 
 export default function CalendarPage() {
@@ -59,39 +60,49 @@ export default function CalendarPage() {
         }
       />
 
-      {/* Controls */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={prevMonth}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <span className="text-sm font-semibold text-gray-900 w-40 text-center">
-            {monthLabel}
-          </span>
-          <Button variant="outline" size="icon" onClick={nextMonth}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-        <PropertyFilter value={propertyFilter} onChange={setPropertyFilter} />
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap gap-4 mb-4">
-        {properties.map((p) => (
-          <div key={p.id} className="flex items-center gap-1.5 text-xs text-muted">
-            <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: p.color }} />
-            {p.name}
+      <div className="flex gap-5 items-start">
+        {/* Calendar column */}
+        <div className="flex-1 min-w-0">
+          {/* Controls */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon" onClick={prevMonth}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm font-semibold text-gray-900 w-40 text-center">
+                {monthLabel}
+              </span>
+              <Button variant="outline" size="icon" onClick={nextMonth}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <PropertyFilter value={propertyFilter} onChange={setPropertyFilter} />
           </div>
-        ))}
-      </div>
 
-      {/* Calendar Grid */}
-      <MonthGrid
-        year={year}
-        month={month}
-        bookings={filteredBookings}
-        properties={properties}
-      />
+          {/* Legend */}
+          <div className="flex flex-wrap gap-4 mb-4">
+            {properties.map((p) => (
+              <div key={p.id} className="flex items-center gap-1.5 text-xs text-muted">
+                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: p.color }} />
+                {p.name}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Grid */}
+          <MonthGrid
+            year={year}
+            month={month}
+            bookings={filteredBookings}
+            properties={properties}
+          />
+        </div>
+
+        {/* Guest chats panel */}
+        <div className="w-[340px] shrink-0 sticky top-6">
+          <GuestChats conversations={guestConversations} properties={properties} />
+        </div>
+      </div>
     </div>
   );
 }
