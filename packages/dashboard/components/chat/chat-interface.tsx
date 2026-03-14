@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -9,30 +9,8 @@ import { Send, Bot, User } from "lucide-react";
 // ============================================================
 // OPENCLAW_HOOK: Chat WebSocket connection
 // Integration: WebSocket ${NEXT_PUBLIC_OPENCLAW_URL}/ws/chat
-// Current behavior: Returns mock AI response after 1s delay
+// Fallback: POST ${NEXT_PUBLIC_API_URL}/chat
 // ============================================================
-
-const mockResponses: Record<string, string> = {
-  revenue:
-    "Your March 2026 revenue is tracking at $28,450 across all 5 properties. That's a 12% increase over February. Waikiki Beachfront Condo is your top performer with $4,850 this month. The Kailua Beach House has the highest per-booking revenue at $3,325 average.",
-  booking:
-    "I found 2 booking gaps in the next 2 weeks:\n\n1. **Waikiki Beachfront Condo**: March 21-24 (3 nights open)\n2. **Manoa Valley Townhouse**: March 18-22 (4 nights open)\n\nI can lower rates by 10% for these periods to attract last-minute bookings. Want me to go ahead?",
-  maintenance:
-    "There's 1 active maintenance issue:\n\n**Manoa Valley Townhouse** - AC making noise. Island HVAC is scheduled for inspection on March 15. Estimated cost: $150.\n\nAll other properties are in good condition. The Kailua Beach House kitchen faucet repair was completed on March 10.",
-  pricing:
-    "Based on my analysis, I have 3 pricing recommendations:\n\n1. **Waikiki Beachfront Condo**: Increase to $380/nt for spring break (Mar 28 - Apr 5)\n2. **Kailua Beach House**: Increase to $520/nt for Easter weekend\n3. **Manoa Valley Townhouse**: Decrease to $195/nt for low-demand week (Apr 7-11)\n\nYou can review and approve these in the Finances tab.",
-  default:
-    "I'm PropBot, your AI property manager. I'm currently managing 5 vacation rentals in Honolulu with 87% occupancy. I handle bookings, cleaning schedules, supply ordering, maintenance, and pricing optimization. How can I help you today?",
-};
-
-function getMockResponse(input: string): string {
-  const lower = input.toLowerCase();
-  if (lower.includes("revenue") || lower.includes("perform") || lower.includes("summary")) return mockResponses.revenue;
-  if (lower.includes("booking") || lower.includes("gap") || lower.includes("unbooked")) return mockResponses.booking;
-  if (lower.includes("maintenance") || lower.includes("repair") || lower.includes("issue")) return mockResponses.maintenance;
-  if (lower.includes("pricing") || lower.includes("rate") || lower.includes("adjust")) return mockResponses.pricing;
-  return mockResponses.default;
-}
 
 interface ChatInterfaceProps {
   initialPrompt?: string;
@@ -44,6 +22,8 @@ export function ChatInterface({ initialPrompt }: ChatInterfaceProps) {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const processedInitialRef = useRef(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const wsReadyRef = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,15 +33,93 @@ export function ChatInterface({ initialPrompt }: ChatInterfaceProps) {
     scrollToBottom();
   }, [messages]);
 
+  // Attempt WebSocket connection to OpenClaw
   useEffect(() => {
-    if (initialPrompt && !processedInitialRef.current) {
-      processedInitialRef.current = true;
-      handleSend(initialPrompt);
-    }
-  }, [initialPrompt]);
+    const openclawUrl = process.env.NEXT_PUBLIC_OPENCLAW_URL;
+    if (!openclawUrl) return;
 
-  const handleSend = (text?: string) => {
-    const messageText = text || input.trim();
+    const wsUrl = openclawUrl.replace(/^http/, "ws") + "/ws/chat";
+
+    const connect = () => {
+      try {
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+
+        ws.onopen = () => {
+          wsReadyRef.current = true;
+          console.log("[Chat] Connected to OpenClaw");
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data as string);
+            // Handle OpenClaw streaming or full response
+            const content: string = data.content ?? data.message ?? data.text ?? String(data);
+            if (!content) return;
+            setMessages((prev) => [...prev, {
+              id: `msg-${Date.now()}-ai`,
+              role: "assistant",
+              content,
+              timestamp: new Date().toISOString(),
+            }]);
+            setIsTyping(false);
+          } catch {
+            // Non-JSON frame — ignore
+          }
+        };
+
+        ws.onclose = () => {
+          wsReadyRef.current = false;
+          wsRef.current = null;
+        };
+
+        ws.onerror = () => {
+          wsReadyRef.current = false;
+          ws.close();
+        };
+      } catch {
+        wsReadyRef.current = false;
+      }
+    };
+
+    connect();
+
+    return () => {
+      wsRef.current?.close();
+      wsReadyRef.current = false;
+    };
+  }, []);
+
+  const sendViaPost = useCallback(async (messageText: string) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
+    try {
+      const res = await fetch(`${apiUrl}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: messageText }),
+      });
+      const data = await res.json() as { content?: string; message?: string };
+      const content = data.content ?? data.message ?? "Sorry, I couldn't get a response.";
+      setMessages((prev) => [...prev, {
+        id: `msg-${Date.now()}-ai`,
+        role: "assistant",
+        content,
+        timestamp: new Date().toISOString(),
+      }]);
+    } catch {
+      setMessages((prev) => [...prev, {
+        id: `msg-${Date.now()}-ai`,
+        role: "assistant",
+        content: "I'm PropBot. OpenClaw isn't reachable right now, but I'm here to help with your properties.",
+        timestamp: new Date().toISOString(),
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
+  }, []);
+
+  const handleSend = useCallback((text?: string) => {
+    const messageText = text ?? input.trim();
     if (!messageText) return;
 
     const userMessage: ChatMessage = {
@@ -75,18 +133,21 @@ export function ChatInterface({ initialPrompt }: ChatInterfaceProps) {
     setInput("");
     setIsTyping(true);
 
-    // Mock AI response with 1s delay
-    setTimeout(() => {
-      const aiMessage: ChatMessage = {
-        id: `msg-${Date.now()}-ai`,
-        role: "assistant",
-        content: getMockResponse(messageText),
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsTyping(false);
-    }, 1000);
-  };
+    if (wsRef.current && wsReadyRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      // Route through OpenClaw WebSocket
+      wsRef.current.send(JSON.stringify({ role: "user", content: messageText }));
+    } else {
+      // Fall back to POST /chat on API
+      sendViaPost(messageText);
+    }
+  }, [input, sendViaPost]);
+
+  useEffect(() => {
+    if (initialPrompt && !processedInitialRef.current) {
+      processedInitialRef.current = true;
+      handleSend(initialPrompt);
+    }
+  }, [initialPrompt, handleSend]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)]">

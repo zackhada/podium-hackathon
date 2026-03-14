@@ -36,12 +36,14 @@ const statusVariant: Record<AIActionStatus, "default" | "success" | "warning" | 
 
 interface ActionCardProps {
   action: AIAction;
+  propertyName?: string;
   onOverride: (action: AIAction) => void;
 }
 
-export function ActionCard({ action, onOverride }: ActionCardProps) {
+export function ActionCard({ action, propertyName, onOverride }: ActionCardProps) {
   const Icon = categoryIcons[action.category];
   const property = getPropertyById(action.propertyId);
+  const displayName = propertyName ?? property?.name ?? action.propertyId;
 
   return (
     <Card className="animate-fade-in">
@@ -60,8 +62,8 @@ export function ActionCard({ action, onOverride }: ActionCardProps) {
                 <p className="text-sm text-muted leading-relaxed">{action.description}</p>
                 <div className="flex items-center gap-3 mt-2 text-xs text-muted-light">
                   <span className="flex items-center gap-1">
-                    <div className="h-2 w-2 rounded-full" style={{ backgroundColor: property?.color }} />
-                    {property?.name}
+                    <div className="h-2 w-2 rounded-full" style={{ backgroundColor: property?.color ?? "#6b7280" }} />
+                    {displayName}
                   </span>
                   <span>{timeAgo(action.timestamp)}</span>
                   {action.cost && <span>{formatCurrency(action.cost)}</span>}
