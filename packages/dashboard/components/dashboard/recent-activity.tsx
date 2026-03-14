@@ -77,30 +77,32 @@ export function RecentActivity() {
       <CardHeader>
         <CardTitle className="text-base">Recent AI Activity</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {actions.map((action) => {
-            const Icon = categoryIcons[action.category] ?? Wrench;
-            const property = getPropertyById(action.propertyId);
-            return (
-              <div key={action.id} className="flex items-start gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100">
-                  <Icon className="h-4 w-4 text-muted" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900 truncate">{action.title}</p>
-                    <Badge variant={statusVariant[action.status]} className="shrink-0">
-                      {action.status}
-                    </Badge>
+      <CardContent className="p-0">
+        <div className="h-[340px] overflow-y-auto px-6 pb-6">
+          <div className="space-y-4">
+            {actions.map((action) => {
+              const Icon = categoryIcons[action.category] ?? Wrench;
+              const property = getPropertyById(action.propertyId);
+              return (
+                <div key={action.id} className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100">
+                    <Icon className="h-4 w-4 text-muted" />
                   </div>
-                  <p className="text-xs text-muted mt-0.5">
-                    {property?.name ?? "Property"} &middot; {timeAgo(action.timestamp)}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-gray-900 truncate">{action.title}</p>
+                      <Badge variant={statusVariant[action.status]} className="shrink-0">
+                        {action.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted mt-0.5">
+                      {property?.name ?? "Property"} &middot; {timeAgo(action.timestamp)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </CardContent>
     </Card>
