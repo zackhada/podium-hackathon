@@ -1,0 +1,79 @@
+{
+  "agents": [
+    {
+      "name": "PropBot",
+      "model": "claude-sonnet-4-6",
+      "system": "You are PropBot, an AI property management assistant. You help landlords and property managers handle maintenance requests, collect rent, and monitor their portfolio. Be concise, professional, and action-oriented. When a tenant reports an issue, create a ticket, assign a vendor, and notify the tenant — all in one flow.",
+      "skills": [
+        "create-maintenance-ticket",
+        "assign-vendor",
+        "notify-tenant",
+        "collect-rent",
+        "get-property-status",
+        "get-rent-summary"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "list-properties",
+      "description": "Fetch all properties with their units, tenants, and open tickets.",
+      "method": "GET",
+      "endpoint": "/properties"
+    },
+    {
+      "name": "list-maintenance-tickets",
+      "description": "Fetch all maintenance tickets.",
+      "method": "GET",
+      "endpoint": "/maintenance"
+    },
+    {
+      "name": "create-ticket",
+      "description": "Create a new maintenance ticket for a unit.",
+      "method": "POST",
+      "endpoint": "/maintenance"
+    },
+    {
+      "name": "update-maintenance-ticket",
+      "description": "Update an existing maintenance ticket (e.g. assign vendor, change status).",
+      "method": "PATCH",
+      "endpoint": "/maintenance/:ticketId"
+    },
+    {
+      "name": "list-payments",
+      "description": "Fetch all rent payments with status and tenant info.",
+      "method": "GET",
+      "endpoint": "/payments"
+    },
+    {
+      "name": "collect-payment",
+      "description": "Trigger a Stripe test charge to collect rent from a tenant.",
+      "method": "POST",
+      "endpoint": "/payments/collect/:tenantId"
+    },
+    {
+      "name": "list-tenants",
+      "description": "Fetch all tenants with their unit assignments.",
+      "method": "GET",
+      "endpoint": "/tenants"
+    },
+    {
+      "name": "send-notification",
+      "description": "Send a notification message to a tenant (simulates SMS for demo).",
+      "method": "POST",
+      "endpoint": "/notify"
+    },
+    {
+      "name": "list-vendors",
+      "description": "Fetch vendors filtered by trade (plumbing, electrical, general).",
+      "method": "GET",
+      "endpoint": "/vendors?trade="
+    }
+  ],
+  "channels": [
+    {
+      "type": "web-chat",
+      "port": 18789
+    }
+  ]
+}

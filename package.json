@@ -1,0 +1,14 @@
+{
+  "name": "podium-hackathon",
+  "private": true,
+  "workspaces": [
+    "packages/api",
+    "packages/dashboard"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=packages/api",
+    "dev:dashboard": "npm run dev --workspace=packages/dashboard",
+    "seed": "npm run seed --workspace=packages/api",
+    "migrate": "npm run migrate --workspace=packages/api"
+  }
+}

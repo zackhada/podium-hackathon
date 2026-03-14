@@ -1,0 +1,62 @@
+version: "3.9"
+
+# TODO: Adjust environment variables and volumes before running
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-podium}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-podium}
+      POSTGRES_DB: ${POSTGRES_DB:-podium}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./packages/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-podium}:${POSTGRES_PASSWORD:-podium}@postgres:5432/${POSTGRES_DB:-podium}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      PORT: 3001
+    ports:
+      - "3001:3001"
+
+  dashboard:
+    build:
+      context: ./packages/dashboard
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_OPENCLAW_URL: http://localhost:18789
+    ports:
+      - "3000:3000"
+
+  # TODO: Replace openclaw/openclaw with the actual OpenClaw image name when available
+  openclaw:
+    image: openclaw/openclaw
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      LLM_PROVIDER: anthropic
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      API_BASE_URL: http://api:3001
+    volumes:
+      - ./openclaw/openclaw.json:/app/openclaw.json
+      - ./openclaw/skills:/app/skills
+    ports:
+      - "18789:18789"
+
+volumes:
+  postgres_data:
