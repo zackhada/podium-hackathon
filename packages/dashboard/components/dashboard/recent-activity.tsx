@@ -24,21 +24,20 @@ const statusVariant: Record<AIActionStatus, "default" | "success" | "warning" | 
 };
 
 export function RecentActivity() {
-  const recentActions = aiActions.slice(0, 5);
-
   return (
     <Card className="animate-fade-in h-full">
       <CardHeader>
         <CardTitle className="text-base">Recent AI Activity</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {/* ============================================================
             OPENCLAW_HOOK: Real-time activity feed
             Integration: WebSocket ${NEXT_PUBLIC_OPENCLAW_URL}/ws/actions
-            Current behavior: Displays last 5 hard-coded actions
+            Current behavior: Displays hard-coded actions
             ============================================================ */}
+        <div className="h-[340px] overflow-y-auto px-6 pb-6">
         <div className="space-y-4">
-          {recentActions.map((action) => {
+          {aiActions.map((action) => {
             const Icon = categoryIcons[action.category];
             const property = getPropertyById(action.propertyId);
             return (
@@ -60,6 +59,7 @@ export function RecentActivity() {
               </div>
             );
           })}
+        </div>
         </div>
       </CardContent>
     </Card>
