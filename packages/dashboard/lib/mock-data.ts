@@ -25,6 +25,7 @@ export const properties: Property[] = [
     color: "#3B82F6",
     occupancy: 92,
     nextBooking: "2026-03-16",
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=640&h=360&fit=crop&auto=format",
   },
   {
     id: "prop-2",
@@ -36,6 +37,7 @@ export const properties: Property[] = [
     color: "#8B5CF6",
     occupancy: 88,
     nextBooking: "2026-03-18",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=640&h=360&fit=crop&auto=format",
   },
   {
     id: "prop-3",
@@ -47,6 +49,7 @@ export const properties: Property[] = [
     color: "#10B981",
     occupancy: 78,
     nextBooking: "2026-03-20",
+    image: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=640&h=360&fit=crop&auto=format",
   },
   {
     id: "prop-4",
@@ -58,6 +61,7 @@ export const properties: Property[] = [
     color: "#F59E0B",
     occupancy: 95,
     nextBooking: "2026-03-15",
+    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=640&h=360&fit=crop&auto=format",
   },
   {
     id: "prop-5",
@@ -69,6 +73,7 @@ export const properties: Property[] = [
     color: "#EF4444",
     occupancy: 82,
     nextBooking: "2026-03-22",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=640&h=360&fit=crop&auto=format",
   },
 ];
 
@@ -83,6 +88,8 @@ export const bookings: Booking[] = [
     propertyId: "prop-1",
     guestName: "Sarah Chen",
     guestEmail: "sarah.chen@email.com",
+    guestPhone: "+1 (808) 555-0142",
+    guestAvatar: "https://i.pravatar.cc/64?img=47",
     checkIn: "2026-03-10",
     checkOut: "2026-03-15",
     nightlyRate: 320,
@@ -109,6 +116,8 @@ export const bookings: Booking[] = [
     propertyId: "prop-2",
     guestName: "Emily Watson",
     guestEmail: "emily.w@email.com",
+    guestPhone: "+1 (415) 555-0289",
+    guestAvatar: "https://i.pravatar.cc/64?img=5",
     checkIn: "2026-03-08",
     checkOut: "2026-03-14",
     nightlyRate: 285,
@@ -161,6 +170,8 @@ export const bookings: Booking[] = [
     propertyId: "prop-4",
     guestName: "Amanda Liu",
     guestEmail: "a.liu@email.com",
+    guestPhone: "+1 (213) 555-0374",
+    guestAvatar: "https://i.pravatar.cc/64?img=9",
     checkIn: "2026-03-12",
     checkOut: "2026-03-16",
     nightlyRate: 175,
@@ -200,6 +211,8 @@ export const bookings: Booking[] = [
     propertyId: "prop-5",
     guestName: "Chris Martinez",
     guestEmail: "c.martinez@email.com",
+    guestPhone: "+1 (310) 555-0517",
+    guestAvatar: "https://i.pravatar.cc/64?img=12",
     checkIn: "2026-03-14",
     checkOut: "2026-03-18",
     nightlyRate: 225,

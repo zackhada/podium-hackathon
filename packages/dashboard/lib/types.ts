@@ -16,6 +16,8 @@ export interface Booking {
   propertyId: string;
   guestName: string;
   guestEmail: string;
+  guestPhone?: string;
+  guestAvatar?: string;
   checkIn: string;
   checkOut: string;
   nightlyRate: number;

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, LayoutDashboard, CalendarDays, Activity, DollarSign, MessageSquare } from "lucide-react";
+import { Bot, LayoutDashboard, CalendarDays, Activity, DollarSign, MessageSquare, Map } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
+  { href: "/map", label: "Map", icon: Map },
   { href: "/calendar", label: "Bookings", icon: CalendarDays },
   { href: "/operations", label: "Operations", icon: Activity },
   { href: "/finances", label: "Finances", icon: DollarSign },
