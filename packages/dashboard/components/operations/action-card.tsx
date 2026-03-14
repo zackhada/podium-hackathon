@@ -52,6 +52,7 @@ const statusVariant: Record<
 
 interface ActionCardProps {
   action: AIAction;
+  propertyName?: string;
   onOverride: (action: AIAction) => void;
   isLive?: boolean;
 }

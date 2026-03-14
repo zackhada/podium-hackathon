@@ -45,13 +45,6 @@ export function ChatInterface({ initialPrompt }: ChatInterfaceProps) {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    if (initialPrompt && !processedInitialRef.current) {
-      processedInitialRef.current = true;
-      handleSend(initialPrompt);
-    }
-  }, [initialPrompt]);
-
   const handleSend = async (text?: string) => {
     const messageText = text || input.trim();
     if (!messageText || isStreaming) return;
@@ -139,6 +132,14 @@ export function ChatInterface({ initialPrompt }: ChatInterfaceProps) {
       streamingIdRef.current = null;
     }
   };
+
+  useEffect(() => {
+    if (initialPrompt && !processedInitialRef.current) {
+      processedInitialRef.current = true;
+      handleSend(initialPrompt);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPrompt]);
 
   const lastMessage = messages[messages.length - 1];
   const isTyping =

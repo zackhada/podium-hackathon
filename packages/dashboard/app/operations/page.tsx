@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { ActionCard } from "@/components/operations/action-card";
 import { CategoryFilter } from "@/components/operations/category-filter";
@@ -8,7 +8,7 @@ import { OverrideDialog } from "@/components/operations/override-dialog";
 import { IncidentReviewCard } from "@/components/operations/incident-review-card";
 import { aiActions as initialActions } from "@/lib/mock-data";
 import { subscribeLive, getLiveActions, addLiveAction } from "@/lib/live-state";
-import { subscribePending, getPendingIncidents, removePendingIncident, PendingIncident } from "@/lib/pending-incidents";
+import { subscribePending, getPendingIncidents, removePendingIncident, addPendingIncident, PendingIncident } from "@/lib/pending-incidents";
 import { AIAction, AIActionCategory, AIActionStatus } from "@/lib/types";
 
 function mapCategory(raw: string): AIActionCategory {
@@ -28,8 +28,6 @@ export default function OperationsPage() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [overrideTarget, setOverrideTarget] = useState<AIAction | null>(null);
 
-  const esRef = useRef<EventSource | null>(null);
-
   // Subscribe to live-state (client-side demo incidents)
   useEffect(() => {
     setLiveActionsSnapshot(getLiveActions());
@@ -45,7 +43,6 @@ export default function OperationsPage() {
   // Subscribe to VAPI real call incidents via SSE
   useEffect(() => {
     const es = new EventSource("/api/vapi/events");
-    esRef.current = es;
 
     es.onmessage = (e) => {
       if (!e.data || e.data.startsWith(":")) return;
@@ -102,11 +99,11 @@ export default function OperationsPage() {
     removePendingIncident(incident.id);
   }
 
-  const handleOverride = (action: AIAction) => {
+  function handleOverride(action: AIAction) {
     setOverrideTarget(action);
-  };
+  }
 
-  const confirmOverride = (reason: string) => {
+  const confirmOverride = () => {
     if (!overrideTarget) return;
     setActions((prev) =>
       prev.map((a) =>
@@ -120,7 +117,7 @@ export default function OperationsPage() {
     <div>
       <PageHeader
         title="Operations"
-        subtitle="AI-managed actions across your properties"
+        subtitle="AI-managed maintenance tickets across your properties"
       />
 
       <div className="mb-6">
@@ -153,12 +150,6 @@ export default function OperationsPage() {
           />
         ))}
       </div>
-
-      {filteredActions.length === 0 && (
-        <div className="text-center py-12 text-muted">
-          No actions found for this category.
-        </div>
-      )}
 
       <OverrideDialog
         open={!!overrideTarget}
